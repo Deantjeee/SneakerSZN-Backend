@@ -1,0 +1,6 @@
+@SneakerSZN_HostAddress = http://localhost:5261
+
+GET {{SneakerSZN_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
