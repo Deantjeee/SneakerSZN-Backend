@@ -11,7 +11,7 @@ namespace SneakerSZN_DAL.Repositories
 {
     public class SneakerRepository : ISneakerRepository
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext; //TEST
 
         public SneakerRepository(ApplicationDbContext dbContext)
         {
