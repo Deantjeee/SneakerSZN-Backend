@@ -21,8 +21,11 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore ./src/SneakerSZN
+      working-directory: ./SneakerSZN
+      run: dotnet restore
     - name: Build
-      run: dotnet build ./src/SneakerSZN --no-restore
+      working-directory: ./SneakerSZN
+      run: dotnet build --no-restore
     - name: Test
-      run: dotnet test ./src/SneakerSZN --no-build --verbosity normal
+      working-directory: ./SneakerSZN
+      run: dotnet test --no-build --verbosity normal
