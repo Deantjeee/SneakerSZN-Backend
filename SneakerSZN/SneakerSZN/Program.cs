@@ -24,6 +24,20 @@ namespace SneakerSZN
                     mySqlOptions => mySqlOptions.MigrationsAssembly("SneakerSZN_DAL")
                 ));
 
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 4;
+                options.Password.RequiredUniqueChars = 1;
+            });
+
+            builder.Services.AddAuthorization();
+            builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
             // Add services to the container.
             builder.Services.AddScoped<ApplicationDbContext>();
 
@@ -47,6 +61,8 @@ namespace SneakerSZN
 
             var app = builder.Build();
 
+            app.MapIdentityApi<IdentityUser>();
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -57,6 +73,7 @@ namespace SneakerSZN
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseCors("AllowReactFrontend");
 
