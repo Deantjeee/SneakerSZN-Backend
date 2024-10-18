@@ -73,7 +73,6 @@ namespace SneakerSZN
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-            app.UseAuthentication();
 
             app.UseCors("AllowReactFrontend");
 
