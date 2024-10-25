@@ -31,16 +31,15 @@ namespace SneakerSZN.Controllers
         [Authorize]
         public IActionResult GetUserRoles()
         {
-            // Retrieve the roles from the claims
             var roles = ((ClaimsIdentity)User.Identity).Claims
                 .Where(c => c.Type == ClaimTypes.Role)
                 .Select(c => c.Value)
                 .ToList();
 
-            // Return the roles to the client
-            if (roles.Count == 0)
+           
+            if (roles == null)
             {
-                return NotFound("No roles found for the user.");
+                return NotFound();
             }
 
             return Ok(roles);
