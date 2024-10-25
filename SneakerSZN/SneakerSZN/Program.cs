@@ -6,13 +6,15 @@ using SneakerSZN_BLL.Interfaces.Repositories;
 using SneakerSZN_DAL.Repositories;
 using SneakerSZN_BLL.Interfaces.Services;
 using SneakerSZN_BLL.Services;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 
 namespace SneakerSZN
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +38,7 @@ namespace SneakerSZN
 
             builder.Services.AddAuthorization();
             builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             // Add services to the container.
@@ -77,6 +80,42 @@ namespace SneakerSZN
             app.UseCors("AllowReactFrontend");
 
             app.MapControllers();
+
+            //Creating roles
+            using(var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                string[] roles = { "Customer", "Admin" };
+
+                foreach (var role in roles)
+                {
+                    if (!await roleManager.RoleExistsAsync(role))
+                    {
+                        await roleManager.CreateAsync(new IdentityRole(role));
+                    }
+                }
+            }
+
+            //Making a admin account 
+            using (var scope = app.Services.CreateScope())
+            {
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+                string email = "admin@gmail.com";
+                string password = "test1234";
+
+                if (await userManager.FindByEmailAsync(email) == null)
+                {
+                    var user = new IdentityUser();
+                    user.UserName = email;
+                    user.Email = email;
+
+                    await userManager.CreateAsync(user, password);
+
+                    await userManager.AddToRoleAsync(user, "Admin");
+                }
+            }
 
             app.Run();
         }

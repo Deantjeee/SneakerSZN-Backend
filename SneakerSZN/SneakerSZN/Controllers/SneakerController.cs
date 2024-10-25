@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SneakerSZN.RequestModels;
 using SneakerSZN.ViewModels;
 using SneakerSZN_BLL.Interfaces.Services;
@@ -53,6 +54,7 @@ namespace SneakerSZN.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public IActionResult Post([FromBody] SneakerRequest sneakerRequest)
         {
             Sneaker sneaker = new()
