@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -24,6 +25,25 @@ namespace SneakerSZN.Controllers
             info.AddRange(User.Claims.Where(c => c.Type == ClaimTypes.Email).Select(r => r.Value).ToList());
 
             return info;
+        }
+
+        [HttpGet("roles")]
+        [Authorize]
+        public IActionResult GetUserRoles()
+        {
+            // Retrieve the roles from the claims
+            var roles = ((ClaimsIdentity)User.Identity).Claims
+                .Where(c => c.Type == ClaimTypes.Role)
+                .Select(c => c.Value)
+                .ToList();
+
+            // Return the roles to the client
+            if (roles.Count == 0)
+            {
+                return NotFound("No roles found for the user.");
+            }
+
+            return Ok(roles);
         }
     }
 }
