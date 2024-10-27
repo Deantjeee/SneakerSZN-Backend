@@ -26,7 +26,6 @@ namespace SneakerSZN.Controllers
             {
                 Id = brand.Id,
                 Name = brand.Name,
-                Sneakers = brand.Sneakers,
             });
         }
 
@@ -44,7 +43,6 @@ namespace SneakerSZN.Controllers
             {
                 Id = id,
                 Name = brand.Name,
-                Sneakers = brand.Sneakers
             };
 
             return brandVM;
