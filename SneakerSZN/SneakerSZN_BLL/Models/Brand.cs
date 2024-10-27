@@ -10,6 +10,7 @@ namespace SneakerSZN_BLL.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public ICollection<Sneaker> Sneakers { get; set; }
+
+        public ICollection<Sneaker>? Sneakers { get; set; }
     }
 }

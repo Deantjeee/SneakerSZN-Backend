@@ -46,6 +46,8 @@ namespace SneakerSZN
 
             builder.Services.AddScoped<ISneakerRepository, SneakerRepository>();
             builder.Services.AddScoped<ISneakerService, SneakerService>();
+            builder.Services.AddScoped<IBrandRepository, BrandRepository>();
+            builder.Services.AddScoped<IBrandService, BrandService>();
 
             builder.Services.AddCors(options =>
             {

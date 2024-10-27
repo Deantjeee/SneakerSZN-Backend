@@ -12,10 +12,12 @@ namespace SneakerSZN.Controllers
     public class SneakerController : ControllerBase
     {
         private readonly ISneakerService _sneakerService;
+        private readonly IBrandService _brandService;
 
-        public SneakerController(ISneakerService sneakerService)
+        public SneakerController(ISneakerService sneakerService, IBrandService brandService)
         {
             _sneakerService = sneakerService;
+            _brandService = brandService;
         }
 
         [HttpGet]
@@ -27,10 +29,14 @@ namespace SneakerSZN.Controllers
                 Name = sneaker.Name,
                 Size = sneaker.Size,
                 Price = sneaker.Price,
+                Stock = sneaker.Stock,
+                BrandId = sneaker.BrandId,
             });
         }
 
         [HttpGet("{id:int}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
         public SneakerVM Get(int id)
         {
             Sneaker? sneaker = _sneakerService.GetById(id);
@@ -46,6 +52,9 @@ namespace SneakerSZN.Controllers
                 Name = sneaker.Name,
                 Size = sneaker.Size,
                 Price = sneaker.Price,
+                Stock = sneaker.Stock,
+                BrandId = sneaker.BrandId,
+                Brand = sneaker.Brand,
             };
 
             return sneakerVM;
@@ -57,11 +66,21 @@ namespace SneakerSZN.Controllers
         [ProducesResponseType(401)]
         public IActionResult Post([FromBody] SneakerRequest sneakerRequest)
         {
+            Brand? brand = _brandService.GetById(sneakerRequest.BrandId);
+
+            if (brand == null)
+            {
+                return BadRequest("No brand");
+            }
+
             Sneaker sneaker = new()
             {
                 Name = sneakerRequest.Name,
                 Size = sneakerRequest.Size,
-                Price = sneakerRequest.Price
+                Price = sneakerRequest.Price,
+                Stock = sneakerRequest.Stock,
+                BrandId = sneakerRequest.BrandId,
+                Brand = brand
             };
 
             if (!_sneakerService.Create(sneaker))
@@ -82,7 +101,9 @@ namespace SneakerSZN.Controllers
                 Id = id,
                 Name = sneakerRequest.Name,
                 Size = sneakerRequest.Size,
-                Price = sneakerRequest.Price
+                Price = sneakerRequest.Price,
+                Stock = sneakerRequest.Stock,
+                BrandId = sneakerRequest.BrandId
             };
 
             if (!_sneakerService.Update(sneaker))
