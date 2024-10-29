@@ -55,7 +55,7 @@ namespace SneakerSZN.Controllers
                 Price = sneaker.Price,
                 Stock = sneaker.Stock,
                 BrandId = sneaker.BrandId,
-                Brand = sneaker.Brand,
+                Brand = _brandService.GetById(sneaker.BrandId)
             };
 
             return sneakerVM;
