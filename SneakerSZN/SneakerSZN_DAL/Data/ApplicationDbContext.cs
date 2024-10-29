@@ -13,13 +13,17 @@ namespace SneakerSZN_DAL.Data
         }
 
         public DbSet<Sneaker> Sneakers { get; set; }
+        public DbSet<Brand> Brands { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Sneaker>().ToTable("Sneakers");
-            modelBuilder.Entity<Sneaker>().HasKey(s => s.Id);
+            modelBuilder.Entity<Sneaker>()
+                .HasOne(s => s.Brand)
+                .WithMany(m => m.Sneakers)
+                .HasForeignKey(s => s.BrandId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
