@@ -24,35 +24,59 @@
 #COPY --from=publish /app/publish .
 #ENTRYPOINT ["dotnet", "SneakerSZN.dll"]
 
-# Start from the base ASP.NET image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
 
-# Build stage using the SDK image
+
+## Start from the base ASP.NET image
+#FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+#WORKDIR /app
+#EXPOSE 8080
+#EXPOSE 8081
+#
+## Build stage using the SDK image
+#FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+#ARG BUILD_CONFIGURATION=Release
+#WORKDIR /src
+#
+## Copy the solution file and restore dependencies
+#COPY ["SneakerSZN.sln", "."]
+#COPY ["SneakerSZN/SneakerSZN.csproj", "SneakerSZN/"]
+#COPY ["SneakerSZN_BLL/SneakerSZN_BLL.csproj", "SneakerSZN_BLL/"]
+#COPY ["SneakerSZN_DAL/SneakerSZN_DAL.csproj", "SneakerSZN_DAL/"]
+#RUN dotnet restore
+#
+## Copy all other files and build the project
+#COPY . .
+#WORKDIR "/src/SneakerSZN"
+#RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
+#
+## Publish stage
+#FROM build AS publish
+#RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+#
+## Final stage
+#FROM base AS final
+#WORKDIR /app
+#COPY --from=publish /app/publish .
+#ENTRYPOINT ["dotnet", "SneakerSZN.dll"]
+
+# Use the official .NET SDK image for building the app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
+WORKDIR /app
 
-# Copy the solution file and restore dependencies
-COPY ["SneakerSZN.sln", "."]
-COPY ["SneakerSZN/SneakerSZN.csproj", "SneakerSZN/"]
-COPY ["SneakerSZN_BLL/SneakerSZN_BLL.csproj", "SneakerSZN_BLL/"]
-COPY ["SneakerSZN_DAL/SneakerSZN_DAL.csproj", "SneakerSZN_DAL/"]
+# Copy the solution and restore dependencies
+COPY *.sln .
+COPY [YourProjectName]/*.csproj ./[YourProjectName]/
 RUN dotnet restore
 
-# Copy all other files and build the project
+# Copy the entire project and build it
 COPY . .
-WORKDIR "/src/SneakerSZN"
-RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR /app/[YourProjectName]
+RUN dotnet publish -c Release -o /app/out
 
-# Publish stage
-FROM build AS publish
-RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-# Final stage
-FROM base AS final
+# Use the official .NET runtime image for running the app
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "SneakerSZN.dll"]
+COPY --from=build /app/out .
+
+# Specify the command to run the app
+ENTRYPOINT ["dotnet", "YourProjectName.dll"]
