@@ -105,7 +105,7 @@ namespace SneakerSZN.Controllers
         [HttpPut("{id:int}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Put(int id, [FromForm] SneakerRequest sneakerRequest, IFormFile imageFile)
+        public async Task<IActionResult> Put(int id, [FromForm] SneakerRequest sneakerRequest, IFormFile? imageFile)
         {
             Sneaker? existingSneaker = _sneakerService.GetById(id);
 
