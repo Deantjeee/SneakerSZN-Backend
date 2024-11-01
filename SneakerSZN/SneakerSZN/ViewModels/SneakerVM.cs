@@ -9,6 +9,7 @@ namespace SneakerSZN.ViewModels
         public int Size { get; set; }
         public decimal Price { get; set; }
         public int Stock { get; set; }
+        public byte[] Image { get; set; }
 
         public int BrandId { get; set; }
         public Brand Brand { get; set; }
