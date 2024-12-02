@@ -1,0 +1,16 @@
+version: '3.4'
+
+services:
+  sneakerszn:
+    image: ${DOCKER_REGISTRY-}sneakerszn
+    build:
+      context: .
+      dockerfile: SneakerSZN/Dockerfile
+    ports:
+      - "5001:5000"
+    networks:
+      - sneakerszn-network
+
+networks:
+    sneakerszn-network:
+        driver: bridge
