@@ -11,7 +11,7 @@ namespace SneakerSZN_BLL.Interfaces.Services
     {
         public List<Brand> GetAll();
 
-        public Brand? GetById(int id);
+        public Brand? GetById(int? id);
 
         public bool Create(Brand brand);
 
