@@ -17,5 +17,21 @@ namespace SneakerSZN_BLL.Models
 
         public int BrandId { get; set; }
         public Brand Brand { get; set; }
+
+        public Sneaker() 
+        { 
+        }
+
+        public Sneaker(int id, string name, int size, decimal price, int stock, byte[] image, int brandId, Brand brand)
+        {
+            Id = id;
+            Name = name;
+            Size = size;
+            Price = price;
+            Stock = stock;
+            Image = image;
+            BrandId = brandId;
+            Brand = brand;
+        }
     }
 }
