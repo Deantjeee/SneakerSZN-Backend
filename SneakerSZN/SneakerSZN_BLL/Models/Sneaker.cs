@@ -22,16 +22,15 @@ namespace SneakerSZN_BLL.Models
         { 
         }
 
-        public Sneaker(int id, string name, int size, decimal price, int stock, byte[] image, int brandId, Brand brand)
+        public Sneaker(int id, string name, int size, decimal price, int stock, Brand brand, byte[] image)
         {
             Id = id;
             Name = name;
             Size = size;
             Price = price;
             Stock = stock;
-            Image = image;
-            BrandId = brandId;
             Brand = brand;
+            Image = image;
         }
     }
 }

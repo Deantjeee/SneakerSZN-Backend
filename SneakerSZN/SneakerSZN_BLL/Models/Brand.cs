@@ -14,5 +14,14 @@ namespace SneakerSZN_BLL.Models
 
         [JsonIgnore]
         public ICollection<Sneaker>? Sneakers { get; set; }
+
+        public Brand() { }
+
+        public Brand(int id, string name, ICollection<Sneaker>? sneakers)
+        {
+            Id = id;
+            Name = name;
+            Sneakers = sneakers;
+        }
     }
 }
