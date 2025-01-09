@@ -41,6 +41,7 @@ namespace SneakerSZN_BLL.Services
         public bool Delete(int id)
         {
             return _repository.Delete(id);
+
         }
     }
 }

@@ -23,7 +23,7 @@ namespace SneakerSZN_DAL.Repositories
             return _dbContext.Brands.ToList();
         }
 
-        public Brand? GetById(int? id)
+        public Brand? GetById(int id)
         {
             return _dbContext.Brands.Find(id);
         }

@@ -23,7 +23,7 @@ namespace SneakerSZN_BLL.Services
             return _repository.GetAll();
         }
 
-        public Brand? GetById(int? id)
+        public Brand GetById(int id)
         {
             return _repository.GetById(id);
         }

@@ -30,8 +30,8 @@ namespace SneakerSZN_TestProject.UnitTests
         private async Task SeedDatabase(ApplicationDbContext context)
         {
             context.Sneakers.AddRange(
-                new Sneaker(1, "Airforce 1", 41, 100.00, 300, null, null, null),
-                new Sneaker(2, "Jordan 1", 42, 170.00, 250, null, null, null)
+                new Sneaker(1, "Airforce 1", 41, 100, 300, null, 1, null),
+                new Sneaker(2, "Jordan 1", 42, 100, 250, null, 1, null)
                 );
             await context.SaveChangesAsync();
         }
