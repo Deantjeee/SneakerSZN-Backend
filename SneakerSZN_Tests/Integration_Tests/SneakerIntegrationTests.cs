@@ -83,6 +83,23 @@ namespace SneakerSZN_Tests.IntegrationTests
         }
 
         [TestMethod]
+        public async Task GetById_IdDoesNotExist()
+        {
+            using (var context = new ApplicationDbContext(_options))
+            {
+                //Arrange
+                await SeedDatabase(context);
+                SneakerRepository sneakerRepository = new SneakerRepository(context);
+
+                //Act
+                Sneaker sneaker1 = _sneakerService.GetById(10);
+
+                //Assert
+                Assert.IsNull(sneaker1);
+            }
+        }
+
+        [TestMethod]
         public async Task Create()
         {
             using (var context = new ApplicationDbContext(_options))
@@ -106,6 +123,7 @@ namespace SneakerSZN_Tests.IntegrationTests
 
                 result = _sneakerService.GetAll();
 
+                //Fluent assertions
                 //Assert
                 Assert.IsNotNull(newSneaker);
                 Assert.IsNotNull(result);
@@ -142,6 +160,32 @@ namespace SneakerSZN_Tests.IntegrationTests
         }
 
         [TestMethod]
+        public async Task Delete_IdDoesNotExist()
+        {
+            using (var context = new ApplicationDbContext(_options))
+            {
+                //Arrange
+                await SeedDatabase(context);
+                SneakerService sneakerService = new SneakerService(new SneakerRepository(context));
+
+                //Act
+                IEnumerable<Sneaker> result = _sneakerService.GetAll();
+
+                //Assert
+                Assert.IsTrue(result.Count() == 2);
+
+                //Act
+                Assert.IsFalse(_sneakerService.Delete(10));
+
+                result = _sneakerService.GetAll();
+
+                //Assert
+                Assert.IsNotNull(result);
+                Assert.IsTrue(result.Count() == 2);
+            }
+        }
+
+        [TestMethod]
         public async Task Update()
         {
             using (var context = new ApplicationDbContext(_options))
@@ -157,7 +201,8 @@ namespace SneakerSZN_Tests.IntegrationTests
                 var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "TestImages", "Airforce 1 Triple White.webp");
                 byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
 
-                Sneaker updatedSneaker = new Sneaker { Id = 1, Name = "Jordan 4", Size = 41, Price = 100, Stock = 300, Image = imageBytes };
+                Sneaker updatedSneaker = _sneakerService.GetById(1);
+                updatedSneaker.Name = "Jordan 4";
 
                 _sneakerService.Update(updatedSneaker);
 
