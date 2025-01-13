@@ -120,7 +120,6 @@ namespace SneakerSZN_Tests.Integration_Tests
 
                 result = _brandService.GetAll();
 
-                //Fluent assertions
                 //Assert
                 Assert.IsNotNull(newBrand);
                 Assert.IsNotNull(result);

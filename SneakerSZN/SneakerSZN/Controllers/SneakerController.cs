@@ -70,6 +70,11 @@ namespace SneakerSZN.Controllers
         [ProducesResponseType(401)]
         public async Task<IActionResult> Post([FromForm] SneakerRequest sneakerRequest, IFormFile imageFile)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             Brand? brand = _brandService.GetById(sneakerRequest.BrandId);
 
             if (brand == null)

@@ -49,19 +49,25 @@ namespace SneakerSZN.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(401)]
         public IActionResult Post([FromBody] BrandRequest brandRequest)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             Brand brand = new()
             {
                 Name = brandRequest.Name
             };
 
-            if (!_brandService.Create(brand))
+            try
             {
-                return BadRequest("Item not created");
+                _brandService.Create(brand);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
             }
 
             return Ok();
