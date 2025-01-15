@@ -30,6 +30,16 @@ namespace SneakerSZN_BLL.Services
 
         public bool Create(Brand brand)
         {
+            if (string.IsNullOrWhiteSpace(brand.Name))
+            {
+                throw new ArgumentException("Brand name is required.");
+            }
+
+            if (brand.Name.Length > 20)
+            {
+                throw new ArgumentException("Brand name cannot exceed 20 characters.");
+            }
+
             return _repository.Create(brand);
         }
 
