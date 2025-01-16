@@ -23,43 +23,53 @@ jobs:
       with:
         dotnet-version: 8.0.100
 
-    # Install Tools
-    - name: Install Coverlet, SonarScanner, and ReportGenerator
+    # Install global tools
+    - name: Install Global Tools
       run: |
         dotnet tool install --global coverlet.console
-        dotnet tool install --global dotnet-sonarscanner
         dotnet tool install --global dotnet-reportgenerator-globaltool
 
     # Restore dependencies
     - name: Restore dependencies
       run: dotnet restore SneakerSZN/SneakerSZN.sln
 
-    # Begin SonarQube Analysis
+    # SonarQube Begin Analysis
     - name: SonarQube Analysis Begin
       run: |
         dotnet sonarscanner begin /k:"Deantjeee_SneakerSZN-Backend" \
           /o:"deantjeee" \
           /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
-          /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.cobertura.xml"
+          /d:sonar.sources="SneakerSZN/SneakerSZN" \
+          /d:sonar.tests="SneakerSZN/SneakerSZN.Tests" \
+          /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.cobertura.xml" \
+          /d:sonar.exclusions="**/bin/**,**/obj/**,**/TestResults/**,**/*.g.cs,**/*.Designer.cs"
 
-    # Build the solution
-    - name: Build the solution
-      run: dotnet build SneakerSZN/SneakerSZN.sln --no-incremental --configuration Release
+    # Build the project
+    - name: Build the project
+      run: dotnet build SneakerSZN/SneakerSZN.sln --no-restore --configuration Release
 
-    # Run Tests with Coverage
-    - name: Run Tests with Coverage
+    # Run tests and generate coverage
+    - name: Run Tests and Generate Coverage
       run: |
-        dotnet test SneakerSZN/SneakerSZN.sln \
+        mkdir -p TestResults
+        dotnet test SneakerSZN/SneakerSZN.Tests/SneakerSZN.Tests.csproj \
           --no-build \
           --configuration Release \
-          --collect:"XPlat Code Coverage" \
-          --results-directory ./TestResults
-        ~/.dotnet/tools/reportgenerator \
-          -reports:"TestResults/**/coverage.cobertura.xml" \
-          -targetdir:"./CoverageReports" \
-          -reporttypes:HtmlInline_AzurePipelines
+          --logger "trx;LogFileName=TestResults/test_results.trx" \
+          /p:CollectCoverage=true \
+          /p:CoverletOutput=TestResults/ \
+          /p:CoverletOutputFormat=cobertura
 
-    # End SonarQube Analysis
+    # Generate HTML coverage report
+    - name: Generate HTML Coverage Report
+      run: |
+        mkdir -p CoverageReports
+        reportgenerator \
+          -reports:TestResults/coverage.cobertura.xml \
+          -targetdir:CoverageReports \
+          -reporttypes:Html
+
+    # SonarQube End Analysis
     - name: SonarQube Analysis End
       run: |
         dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
