@@ -41,18 +41,22 @@ jobs:
           /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
           /d:sonar.cs.opencover.reportsPaths="coverage.xml"
 
-    # Build the project
-    - name: Build the project
+    # Build the solution
+    - name: Build the solution
       run: dotnet build SneakerSZN/SneakerSZN.sln --no-incremental --configuration Release
 
-    # Run Tests and Generate Coverage
+    # Run Tests with Coverage
     - name: Run Tests with Coverage
       run: |
-        coverlet SneakerSZN/SneakerSZN.Tests/bin/Release/net8.0/SneakerSZN.Tests.dll \
-          --target "dotnet" \
-          --targetargs "test SneakerSZN/SneakerSZN.sln --no-build --configuration Release" \
-          -f opencover \
-          -o coverage.xml
+        dotnet test SneakerSZN/SneakerSZN.sln \
+          --no-build \
+          --configuration Release \
+          --collect:"XPlat Code Coverage" \
+          --results-directory ./TestResults
+        reportgenerator \
+          -reports:"TestResults/**/coverage.cobertura.xml" \
+          -targetdir:"./CoverageReports" \
+          -reporttypes:HtmlInline_AzurePipelines
 
     # End SonarQube Analysis
     - name: SonarQube Analysis End
