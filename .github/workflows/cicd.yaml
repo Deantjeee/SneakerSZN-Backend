@@ -69,10 +69,17 @@ jobs:
     - name: Generate HTML Coverage Report
       run: |
         mkdir -p CoverageReports
-        reportgenerator \
-          -reports:TestResults/coverage.cobertura.xml \
-          -targetdir:CoverageReports \
-          -reporttypes:Html
+        # Check if the coverage report exists
+        if [ -f "TestResults/coverage.cobertura.xml" ]; then
+          echo "Coverage report found, generating HTML report."
+          reportgenerator \
+            -reports:TestResults/coverage.cobertura.xml \
+            -targetdir:CoverageReports \
+            -reporttypes:Html
+        else
+          echo "Coverage report not found! Please check your coverage generation step."
+          exit 1
+        fi
 
     # SonarQube End Analysis
     - name: SonarQube Analysis End
