@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: SneakerSZN/SneakerSZN/Dockerfile
-    image: DeanMichiels/sneakerbackend:latest
+    image: deanmichiels/sneakerbackend:latest
     container_name: SneakerSZN-backend
     ports:
       - "5001:5000" # Adjust to your backend's exposed port #
@@ -19,8 +19,10 @@ services:
     environment:
       - WATCHTOWER_CLEANUP=true # Remove old images
       - WATCHTOWER_POLL_INTERVAL=60
-      - DOCKER_USERNAME=docker.io/DeanMichiels
+      - DOCKER_USERNAME=docker.io/deanmichiels
       - DOCKER_PASSWORD=DZRd8BwC?
+    networks:
+      - sneakerszn-network
     
 networks:
   sneakerszn-network:
