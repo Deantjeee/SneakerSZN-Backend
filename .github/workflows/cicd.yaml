@@ -23,11 +23,10 @@ jobs:
       with:
         dotnet-version: 8.0.100
 
-    # Install global tools
-    - name: Install Global Tools
+    # Install the SonarScanner for .NET tool
+    - name: Install SonarScanner for .NET
       run: |
-        dotnet tool install --global coverlet.console
-        dotnet tool install --global dotnet-reportgenerator-globaltool
+        dotnet tool install --global dotnet-sonarscanner
 
     # Restore dependencies
     - name: Restore dependencies
