@@ -46,5 +46,5 @@ jobs:
     # Build and push Docker image
     - name: Build and Push Docker Image
       run: |
-        docker build -t deanmichiels/sneakerbackend:latest -f SneakerSZN/Dockerfile SneakerSZN
+        docker build -t deanmichiels/sneakerbackend:latest -f SneakerSZN/SneakerSZN/Dockerfile SneakerSZN
         docker push deanmichiels/sneakerbackend:latest
