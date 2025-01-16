@@ -23,6 +23,10 @@ jobs:
       with:
         dotnet-version: 8.0.100
 
+    # Install dotnet-sonarscanner
+    - name: Install SonarScanner
+      run: dotnet tool install --global dotnet-sonarscanner
+
     # Install Coverlet.Console globally
     - name: Install Coverlet.Console
       run: dotnet tool install --global coverlet.console
@@ -33,6 +37,8 @@ jobs:
 
     # Begin SonarQube Analysis
     - name: Begin SonarQube Analysis
+      env:
+        PATH: $PATH:/home/runner/.dotnet/tools
       run: |
         dotnet sonarscanner begin /k:"Deantjeee_SneakerSZN-Backend" \
           /d:sonar.organization="deantjeee" \
@@ -46,8 +52,9 @@ jobs:
 
     # Run tests and collect coverage
     - name: Run Tests and Collect Coverage
+      env:
+        PATH: $PATH:/home/runner/.dotnet/tools
       run: |
-        export PATH="$PATH:/home/runner/.dotnet/tools"
         mkdir -p TestResults
         coverlet SneakerSZN/SneakerSZN.Tests/bin/Debug/net8.0/SneakerSZN.Tests.dll \
           --target "dotnet" \
@@ -57,6 +64,8 @@ jobs:
 
     # End SonarQube Analysis
     - name: End SonarQube Analysis
+      env:
+        PATH: $PATH:/home/runner/.dotnet/tools
       run: |
         dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
