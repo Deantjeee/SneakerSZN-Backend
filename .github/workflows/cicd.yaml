@@ -27,10 +27,12 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore SneakerSZN/SneakerSZN.sln
 
-    # Run tests (continue on error)
+    # Run tests with result output
     - name: Run Tests
       run: |
-        dotnet test SneakerSZN/SneakerSZN.sln --no-restore || echo "Tests failed but continuing..."
+        mkdir -p TestResults
+        dotnet test SneakerSZN/SneakerSZN.sln --no-restore --logger "trx;LogFileName=TestResults/test_results.trx"
+
 
     # Build the project
     - name: Build the project
