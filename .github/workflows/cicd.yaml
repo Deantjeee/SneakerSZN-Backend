@@ -24,10 +24,11 @@ jobs:
         dotnet-version: 8.0.100
 
     # Install Tools
-    - name: Install Coverlet and SonarScanner
+    - name: Install Coverlet, SonarScanner, and ReportGenerator
       run: |
         dotnet tool install --global coverlet.console
         dotnet tool install --global dotnet-sonarscanner
+        dotnet tool install --global dotnet-reportgenerator-globaltool
 
     # Restore dependencies
     - name: Restore dependencies
@@ -39,7 +40,7 @@ jobs:
         dotnet sonarscanner begin /k:"Deantjeee_SneakerSZN-Backend" \
           /o:"deantjeee" \
           /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
-          /d:sonar.cs.opencover.reportsPaths="coverage.xml"
+          /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.cobertura.xml"
 
     # Build the solution
     - name: Build the solution
@@ -53,7 +54,7 @@ jobs:
           --configuration Release \
           --collect:"XPlat Code Coverage" \
           --results-directory ./TestResults
-        reportgenerator \
+        ~/.dotnet/tools/reportgenerator \
           -reports:"TestResults/**/coverage.cobertura.xml" \
           -targetdir:"./CoverageReports" \
           -reporttypes:HtmlInline_AzurePipelines
