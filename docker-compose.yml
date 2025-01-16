@@ -1,0 +1,29 @@
+services:
+  SneakerSZN-backend:
+    build:
+      context: .
+      dockerfile: SneakerSZN/SneakerSZN/Dockerfile
+    image: DeanMichiels/sneakerbackend:latest
+    container_name: SneakerSZN-backend
+    ports:
+      - "5001:5000" # Adjust to your backend's exposed port #
+    networks:
+      - sneakerszn-network
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true # Remove old images
+      - WATCHTOWER_POLL_INTERVAL=60
+      - DOCKER_USERNAME=DeanMichiels
+      - DOCKER_PASSWORD=DZRd8BwC?
+    
+networks:
+  sneakerszn-network:
+    driver: bridge
+
+    
