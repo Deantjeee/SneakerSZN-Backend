@@ -50,8 +50,9 @@ jobs:
     # Run tests and generate coverage
     - name: Run Tests and Generate Coverage
       run: |
+        # Ensure TestResults directory exists
         mkdir -p TestResults
-        dotnet test SneakerSZN/SneakerSZN.Tests/SneakerSZN.Tests.csproj \
+        dotnet test SneakerSZN/SneakerSZN.sln \
           --no-build \
           --configuration Release \
           --logger "trx;LogFileName=TestResults/test_results.trx" \
