@@ -65,6 +65,10 @@ jobs:
           /p:CoverletOutput=TestResults/ \
           /p:CoverletOutputFormat=cobertura
 
+        # List the contents of the TestResults directory to check the coverage report location
+        echo "Contents of TestResults directory:"
+        ls -R TestResults/
+
     # Generate HTML coverage report
     - name: Generate HTML Coverage Report
       run: |
