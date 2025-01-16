@@ -17,13 +17,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Set up .NET
+    # Set up .NET Core 8.0
     - name: Setup .NET Core 8.0
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.100
 
-    # Install the SonarScanner for .NET tool
+    # Install SonarScanner for .NET tool
     - name: Install SonarScanner for .NET
       run: |
         dotnet tool install --global dotnet-sonarscanner
@@ -45,7 +45,7 @@ jobs:
           /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
           /d:sonar.sources="SneakerSZN/SneakerSZN" \
           /d:sonar.tests="SneakerSZN/SneakerSZN.Tests" \
-          /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.cobertura.xml" \
+          /d:sonar.cs.opencover.reportsPaths="TestResults/coverage.cobertura.xml" \
           /d:sonar.exclusions="**/bin/**,**/obj/**,**/TestResults/**,**/*.g.cs,**/*.Designer.cs"
 
     # Build the project
@@ -57,6 +57,8 @@ jobs:
       run: |
         # Ensure TestResults directory exists
         mkdir -p TestResults
+
+        # Run tests and collect coverage using coverlet
         dotnet test SneakerSZN/SneakerSZN.sln \
           --no-build \
           --configuration Release \
@@ -66,7 +68,7 @@ jobs:
           /p:CoverletOutputFormat=cobertura
 
         # List the contents of the TestResults directory to check the coverage report location
-        echo "Contents of TestResults directory:"
+        echo "Contents of TestResults directory after coverage generation:"
         ls -R TestResults/
 
     # Generate HTML coverage report
