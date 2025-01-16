@@ -10,9 +10,9 @@ EXPOSE 5000
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["SneakerSZN/SneakerSZN/SneakerSZN.csproj", "SneakerSZN/"]
-COPY ["SneakerSZN/SneakerSZN_DAL/SneakerSZN_DAL.csproj", "SneakerSZN_DAL/"]
-COPY ["SneakerSZN/SneakerSZN_BLL/SneakerSZN_BLL.csproj", "SneakerSZN_BLL/"]
+COPY ["SneakerSZN/SneakerSZN.csproj", "SneakerSZN/"]
+COPY ["SneakerSZN_DAL/SneakerSZN_DAL.csproj", "SneakerSZN_DAL/"]
+COPY ["SneakerSZN_BLL/SneakerSZN_BLL.csproj", "SneakerSZN_BLL/"]
 RUN dotnet restore "./SneakerSZN/SneakerSZN.csproj"
 COPY . .
 WORKDIR "/src/SneakerSZN/SneakerSZN"
