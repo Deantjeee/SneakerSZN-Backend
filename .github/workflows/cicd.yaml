@@ -28,6 +28,11 @@ jobs:
       run: |
         dotnet tool install --global dotnet-sonarscanner
 
+    # Install ReportGenerator tool
+    - name: Install ReportGenerator
+      run: |
+        dotnet tool install --global dotnet-reportgenerator-globaltool
+
     # Restore dependencies
     - name: Restore dependencies
       run: dotnet restore SneakerSZN/SneakerSZN.sln
