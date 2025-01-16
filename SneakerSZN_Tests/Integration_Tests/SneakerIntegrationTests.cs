@@ -30,9 +30,7 @@ namespace SneakerSZN_Tests.IntegrationTests
 
         private async Task SeedDatabase(ApplicationDbContext context)
         {
-            //Setup test image
-            var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "TestImages", "Airforce 1 Triple White.webp"); 
-            byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
+            byte[] imageBytes = new byte[64];
 
             //Setup Sneakers
             context.Sneakers.AddRange(
@@ -115,8 +113,7 @@ namespace SneakerSZN_Tests.IntegrationTests
                 Assert.IsTrue(result.Count() == 2);
 
                 //Act
-                var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "TestImages", "Airforce 1 Triple White.webp");
-                byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
+                byte[] imageBytes = new byte[64];
 
                 Sneaker newSneaker = new Sneaker { Name = "Jordan 4", Size = 41, Price = 100, Stock = 300, Image = imageBytes };
                 _sneakerService.Create(newSneaker);
@@ -198,8 +195,7 @@ namespace SneakerSZN_Tests.IntegrationTests
                 IEnumerable<Sneaker> result = _sneakerService.GetAll();
                 Assert.IsTrue(result.First().Name == "Airforce 1");
 
-                var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "TestImages", "Airforce 1 Triple White.webp");
-                byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
+                byte[] imageBytes = new byte[64];
 
                 Sneaker updatedSneaker = _sneakerService.GetById(1);
                 updatedSneaker.Name = "Jordan 4";
