@@ -1,14 +1,12 @@
-
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using SneakerSZN_DAL.Data;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using SneakerSZN.Hubs;
 using SneakerSZN_BLL.Interfaces.Repositories;
-using SneakerSZN_DAL.Repositories;
 using SneakerSZN_BLL.Interfaces.Services;
 using SneakerSZN_BLL.Services;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
-
+using SneakerSZN_DAL.Data;
+using SneakerSZN_DAL.Repositories;
 
 namespace SneakerSZN
 {
@@ -41,7 +39,6 @@ namespace SneakerSZN
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            // Add services to the container.
             builder.Services.AddScoped<ApplicationDbContext>();
 
             builder.Services.AddScoped<ISneakerRepository, SneakerRepository>();
@@ -55,17 +52,15 @@ namespace SneakerSZN
                 {
                     builder.WithOrigins("http://localhost:3000")
                            .AllowAnyMethod()
-                           .AllowAnyHeader();
+                           .AllowAnyHeader()
+                           .AllowCredentials();
                 });
             });
 
-            builder.Services.AddControllers();
-            //.AddJsonOptions(options =>
-            //{
-            //    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-            //});
+            builder.Services.AddSignalR();
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddControllers();
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -73,7 +68,6 @@ namespace SneakerSZN
 
             app.MapIdentityApi<IdentityUser>();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -88,8 +82,9 @@ namespace SneakerSZN
 
             app.MapControllers();
 
-            //Creating roles
-            using(var scope = app.Services.CreateScope())
+            app.MapHub<ChatHub>("/chathub");
+
+            using (var scope = app.Services.CreateScope())
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
@@ -104,7 +99,6 @@ namespace SneakerSZN
                 }
             }
 
-            //Making a admin account 
             using (var scope = app.Services.CreateScope())
             {
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
