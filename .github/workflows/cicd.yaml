@@ -33,10 +33,21 @@ jobs:
         mkdir -p TestResults
         dotnet test SneakerSZN/SneakerSZN.sln --no-restore --logger "trx;LogFileName=TestResults/test_results.trx"
 
-
     # Build the project
     - name: Build the project
       run: dotnet build SneakerSZN/SneakerSZN.sln --no-restore --configuration Release
+
+    # SonarQube Analysis
+    - name: SonarQube Analysis
+      uses: SonarSource/sonarcloud-github-action@v2
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.projectKey=Deantjeee_SneakerSZN-Backend
+          -Dsonar.organization=deantjeee
+          -Dsonar.host.url=https://sonarcloud.io
+          -Dsonar.cs.opencover.reportsPaths=TestResults/test_results.trx
 
     # Log in to Docker Hub
     - name: Log in to Docker Hub
