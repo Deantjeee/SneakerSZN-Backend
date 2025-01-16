@@ -15,7 +15,7 @@ COPY ["SneakerSZN_DAL/SneakerSZN_DAL.csproj", "SneakerSZN_DAL/"]
 COPY ["SneakerSZN_BLL/SneakerSZN_BLL.csproj", "SneakerSZN_BLL/"]
 RUN dotnet restore "./SneakerSZN/SneakerSZN.csproj"
 COPY . .
-WORKDIR "/src/SneakerSZN/SneakerSZN"
+WORKDIR "/src/SneakerSZN"
 RUN dotnet build "./SneakerSZN.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
