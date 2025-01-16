@@ -64,7 +64,7 @@ jobs:
           --configuration Release \
           --logger "trx;LogFileName=TestResults/test_results.trx" \
           /p:CollectCoverage=true \
-          /p:CoverletOutput=TestResults/ \
+          /p:CoverletOutput=TestResults/coverage/ \
           /p:CoverletOutputFormat=cobertura
 
         # List the contents of the TestResults directory to check the coverage report location
@@ -76,10 +76,10 @@ jobs:
       run: |
         mkdir -p CoverageReports
         # Check if the coverage report exists
-        if [ -f "TestResults/coverage.cobertura.xml" ]; then
+        if [ -f "TestResults/coverage/coverage.cobertura.xml" ]; then
           echo "Coverage report found, generating HTML report."
           reportgenerator \
-            -reports:TestResults/coverage.cobertura.xml \
+            -reports:TestResults/coverage/coverage.cobertura.xml \
             -targetdir:CoverageReports \
             -reporttypes:Html
         else
