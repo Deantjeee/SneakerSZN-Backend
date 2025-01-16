@@ -20,7 +20,7 @@ services:
       - WATCHTOWER_CLEANUP=true # Remove old images
       - WATCHTOWER_POLL_INTERVAL=60
       - DOCKER_USERNAME=docker.io/deanmichiels
-      - DOCKER_PASSWORD=DZRd8BwC?
+      - DOCKER_PASSWORD=${DOCKER_PASSWORD}
     networks:
       - sneakerszn-network
     
