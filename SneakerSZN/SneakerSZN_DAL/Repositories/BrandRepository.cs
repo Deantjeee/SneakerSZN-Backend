@@ -9,47 +9,47 @@ using System.Threading.Tasks;
 
 namespace SneakerSZN_DAL.Repositories
 {
-    public class SneakerRepository : ISneakerRepository
+    public class BrandRepository : IBrandRepository
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public SneakerRepository(ApplicationDbContext dbContext)
+        public BrandRepository(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public List<Sneaker> GetAll()
+        public List<Brand> GetAll()
         {
-            return _dbContext.Sneakers.ToList();
+            return _dbContext.Brands.ToList();
         }
 
-        public Sneaker? GetById(int id)
+        public Brand? GetById(int id)
         {
-            return _dbContext.Sneakers.Find(id);
+            return _dbContext.Brands.Find(id);
         }
 
-        public bool Create(Sneaker sneaker)
+        public bool Create(Brand brand)
         {
-            _dbContext.Sneakers.Add(sneaker);
+            _dbContext.Brands.Add(brand);
             return _dbContext.SaveChanges() > 0;
         }
 
-        public bool Update(Sneaker sneaker)
+        public bool Update(Brand brand)
         {
-            _dbContext.Sneakers.Update(sneaker);
+            _dbContext.Brands.Update(brand);
             return _dbContext.SaveChanges() > 0;
         }
 
         public bool Delete(int id)
         {
-            Sneaker? sneaker = _dbContext.Sneakers.Find(id);
+            Brand? brand = _dbContext.Brands.Find(id);
 
-            if(sneaker == null)
+            if (brand == null)
             {
                 return false;
             }
 
-            _dbContext.Sneakers.Remove(sneaker);
+            _dbContext.Brands.Remove(brand);
             return _dbContext.SaveChanges() > 0;
         }
     }
