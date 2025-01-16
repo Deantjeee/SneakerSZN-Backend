@@ -13,60 +13,62 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v3
+    # Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # Set up .NET
-      - name: Setup .NET Core 8.0
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 8.0.100
+    # Set up .NET
+    - name: Setup .NET Core 8.0
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.100
 
-      # Restore dependencies
-      - name: Restore dependencies
-        run: dotnet restore SneakerSZN/SneakerSZN.sln
+    # Install Coverlet.Console globally
+    - name: Install Coverlet.Console
+      run: dotnet tool install --global coverlet.console
 
-      # Run tests and generate code coverage
-      - name: Run Tests with Coverage
-        run: |
-          mkdir -p TestResults
-          dotnet test SneakerSZN/SneakerSZN.sln --no-restore --collect:"Code Coverage" \
-          --results-directory TestResults --logger "trx;LogFileName=test_results.trx"
+    # Restore dependencies
+    - name: Restore dependencies
+      run: dotnet restore SneakerSZN/SneakerSZN.sln
 
-      # Install ReportGenerator
-      - name: Install ReportGenerator
-        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+    # Begin SonarQube Analysis
+    - name: Begin SonarQube Analysis
+      run: |
+        dotnet sonarscanner begin /k:"Deantjeee_SneakerSZN-Backend" \
+          /d:sonar.organization="deantjeee" \
+          /d:sonar.host.url="https://sonarcloud.io" \
+          /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+          /d:sonar.cs.opencover.reportsPaths="TestResults/coverage.xml"
 
-      # Generate code coverage report in Cobertura format
-      - name: Generate Coverage Report
-        run: |
-          reportgenerator \
-          -reports:TestResults/**/*.xml \
-          -targetdir:CoverageReports \
-          -reporttypes:Cobertura
+    # Build the project
+    - name: Build the project
+      run: dotnet build SneakerSZN/SneakerSZN.sln --no-incremental
 
-      # Log in to Docker Hub
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    # Run tests and collect coverage
+    - name: Run Tests and Collect Coverage
+      run: |
+        export PATH="$PATH:/home/runner/.dotnet/tools"
+        mkdir -p TestResults
+        coverlet SneakerSZN/SneakerSZN.Tests/bin/Debug/net8.0/SneakerSZN.Tests.dll \
+          --target "dotnet" \
+          --targetargs "test --no-build" \
+          -f opencover \
+          -o TestResults/coverage.xml
 
-      # Build and push Docker image
-      - name: Build and Push Docker Image
-        run: |
-          docker build -t deanmichiels/sneakerbackend:latest -f SneakerSZN/SneakerSZN/Dockerfile SneakerSZN
-          docker push deanmichiels/sneakerbackend:latest
+    # End SonarQube Analysis
+    - name: End SonarQube Analysis
+      run: |
+        dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
-      # Run SonarQube analysis
-      - name: Run SonarQube Analysis
-        uses: SonarSource/sonarcloud-github-action@v2
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=Deantjeee_SneakerSZN-Backend
-            -Dsonar.organization=deantjeee
-            -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.cs.opencover.reportsPaths=CoverageReports/Cobertura.xml
+    # Log in to Docker Hub
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # Build and push Docker image
+    - name: Build and Push Docker Image
+      run: |
+        docker build -t deanmichiels/sneakerbackend:latest -f SneakerSZN/SneakerSZN/Dockerfile SneakerSZN
+        docker push deanmichiels/sneakerbackend:latest
