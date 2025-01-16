@@ -17,81 +17,36 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Set up .NET Core 8.0
+    # Set up .NET
     - name: Setup .NET Core 8.0
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.100
 
-    # Install SonarScanner for .NET tool
-    - name: Install SonarScanner for .NET
-      run: |
-        dotnet tool install --global dotnet-sonarscanner
-
-    # Install ReportGenerator tool
-    - name: Install ReportGenerator
-      run: |
-        dotnet tool install --global dotnet-reportgenerator-globaltool
-
     # Restore dependencies
     - name: Restore dependencies
       run: dotnet restore SneakerSZN/SneakerSZN.sln
 
-    # SonarQube Begin Analysis
-    - name: SonarQube Analysis Begin
+    # Run tests with result output
+    - name: Run Tests
       run: |
-        dotnet sonarscanner begin /k:"Deantjeee_SneakerSZN-Backend" \
-          /o:"deantjeee" \
-          /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
-          /d:sonar.sources="SneakerSZN/SneakerSZN" \
-          /d:sonar.tests="SneakerSZN/SneakerSZN.Tests" \
-          /d:sonar.cs.opencover.reportsPaths="TestResults/coverage.cobertura.xml" \
-          /d:sonar.exclusions="**/bin/**,**/obj/**,**/TestResults/**,**/*.g.cs,**/*.Designer.cs"
-
+        mkdir -p TestResults
+        dotnet test SneakerSZN/SneakerSZN.sln --no-restore --logger "trx;LogFileName=TestResults/test_results.trx"
     # Build the project
     - name: Build the project
       run: dotnet build SneakerSZN/SneakerSZN.sln --no-restore --configuration Release
 
-    # Run tests and generate coverage
-    - name: Run Tests and Generate Coverage
-      run: |
-        # Ensure TestResults directory exists
-        mkdir -p TestResults
-
-        # Run tests and collect coverage using coverlet
-        dotnet test SneakerSZN/SneakerSZN.sln \
-          --no-build \
-          --configuration Release \
-          --logger "trx;LogFileName=TestResults/test_results.trx" \
-          /p:CollectCoverage=true \
-          /p:CoverletOutput=TestResults/coverage/ \
-          /p:CoverletOutputFormat=cobertura
-
-        # List the contents of the TestResults directory to check the coverage report location
-        echo "Contents of TestResults directory after coverage generation:"
-        ls -R TestResults/
-
-    # Generate HTML coverage report
-    - name: Generate HTML Coverage Report
-      run: |
-        mkdir -p CoverageReports
-        # Check if the coverage report exists
-        if [ -f "TestResults/coverage/coverage.cobertura.xml" ]; then
-          echo "Coverage report found, generating HTML report."
-          reportgenerator \
-            -reports:TestResults/coverage/coverage.cobertura.xml \
-            -targetdir:CoverageReports \
-            -reporttypes:Html
-        else
-          echo "Coverage report not found! Please check your coverage generation step."
-          exit 1
-        fi
-
-    # SonarQube End Analysis
-    - name: SonarQube Analysis End
-      run: |
-        dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-
+    # SonarQube Analysis
+    - name: SonarQube Analysis
+      uses: SonarSource/sonarcloud-github-action@v2
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.projectKey=Deantjeee_SneakerSZN-Backend
+          -Dsonar.organization=deantjeee
+          -Dsonar.host.url=https://sonarcloud.io
+          -Dsonar.cs.opencover.reportsPaths=TestResults/test_results.trx
     # Log in to Docker Hub
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
