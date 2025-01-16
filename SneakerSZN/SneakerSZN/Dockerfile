@@ -16,11 +16,11 @@ COPY ["SneakerSZN_BLL/SneakerSZN_BLL.csproj", "SneakerSZN_BLL/"]
 RUN dotnet restore "./SneakerSZN/SneakerSZN.csproj"
 COPY . .
 WORKDIR "/src/SneakerSZN"
-RUN dotnet build "./SneakerSZN.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./SneakerSZN.csproj" -c "$BUILD_CONFIGURATION" -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./SneakerSZN.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./SneakerSZN.csproj" -c "$BUILD_CONFIGURATION" -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
