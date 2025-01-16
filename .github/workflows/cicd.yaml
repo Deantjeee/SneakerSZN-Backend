@@ -23,51 +23,41 @@ jobs:
       with:
         dotnet-version: 8.0.100
 
-    # Install dotnet-sonarscanner
-    - name: Install SonarScanner
-      run: dotnet tool install --global dotnet-sonarscanner
-
-    # Install Coverlet.Console globally
-    - name: Install Coverlet.Console
-      run: dotnet tool install --global coverlet.console
+    # Install Tools
+    - name: Install Coverlet and SonarScanner
+      run: |
+        dotnet tool install --global coverlet.console
+        dotnet tool install --global dotnet-sonarscanner
 
     # Restore dependencies
     - name: Restore dependencies
       run: dotnet restore SneakerSZN/SneakerSZN.sln
 
     # Begin SonarQube Analysis
-    - name: Begin SonarQube Analysis
-      env:
-        PATH: $PATH:/home/runner/.dotnet/tools
+    - name: SonarQube Analysis Begin
       run: |
         dotnet sonarscanner begin /k:"Deantjeee_SneakerSZN-Backend" \
-          /d:sonar.organization="deantjeee" \
-          /d:sonar.host.url="https://sonarcloud.io" \
-          /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
-          /d:sonar.cs.opencover.reportsPaths="TestResults/coverage.xml"
+          /o:"deantjeee" \
+          /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+          /d:sonar.cs.opencover.reportsPaths="coverage.xml"
 
     # Build the project
     - name: Build the project
-      run: dotnet build SneakerSZN/SneakerSZN.sln --no-incremental
+      run: dotnet build SneakerSZN/SneakerSZN.sln --no-incremental --configuration Release
 
-    # Run tests and collect coverage
-    - name: Run Tests and Collect Coverage
-      env:
-        PATH: $PATH:/home/runner/.dotnet/tools
+    # Run Tests and Generate Coverage
+    - name: Run Tests with Coverage
       run: |
-        mkdir -p TestResults
-        coverlet SneakerSZN/SneakerSZN.Tests/bin/Debug/net8.0/SneakerSZN.Tests.dll \
+        coverlet SneakerSZN/SneakerSZN.Tests/bin/Release/net8.0/SneakerSZN.Tests.dll \
           --target "dotnet" \
-          --targetargs "test --no-build" \
+          --targetargs "test SneakerSZN/SneakerSZN.sln --no-build --configuration Release" \
           -f opencover \
-          -o TestResults/coverage.xml
+          -o coverage.xml
 
     # End SonarQube Analysis
-    - name: End SonarQube Analysis
-      env:
-        PATH: $PATH:/home/runner/.dotnet/tools
+    - name: SonarQube Analysis End
       run: |
-        dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
     # Log in to Docker Hub
     - name: Log in to Docker Hub
