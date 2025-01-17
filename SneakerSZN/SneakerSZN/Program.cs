@@ -7,6 +7,9 @@ using SneakerSZN_BLL.Interfaces.Services;
 using SneakerSZN_BLL.Services;
 using SneakerSZN_DAL.Data;
 using SneakerSZN_DAL.Repositories;
+using Microsoft.Extensions.Options;
+using Stripe;
+using SneakerSZN.Configurations;
 
 namespace SneakerSZN
 {
@@ -15,6 +18,8 @@ namespace SneakerSZN
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 
             string connectionString = builder.Configuration.GetConnectionString("MySqlConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
@@ -58,11 +63,17 @@ namespace SneakerSZN
             });
 
             builder.Services.AddSignalR();
-
             builder.Services.AddControllers();
-
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // Initialize Stripe API key with the SecretKey from configuration
+            builder.Services.AddSingleton<StripeClient>(sp =>
+            {
+                var stripeSettings = sp.GetRequiredService<IOptions<StripeSettings>>().Value;
+                StripeConfiguration.ApiKey = stripeSettings.SecretKey;
+                return new StripeClient(stripeSettings.SecretKey);
+            });
 
             var app = builder.Build();
 
@@ -75,19 +86,15 @@ namespace SneakerSZN
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
             app.UseCors("AllowReactFrontend");
-
             app.MapControllers();
-
             app.MapHub<ChatHub>("/chathub");
 
+            // Create roles and default user
             using (var scope = app.Services.CreateScope())
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
                 string[] roles = { "Customer", "Admin" };
 
                 foreach (var role in roles)
@@ -99,21 +106,22 @@ namespace SneakerSZN
                 }
             }
 
+            // Create the admin user if it doesn't exist
             using (var scope = app.Services.CreateScope())
             {
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
                 string email = "admin@gmail.com";
                 string password = "test1234";
 
                 if (await userManager.FindByEmailAsync(email) == null)
                 {
-                    var user = new IdentityUser();
-                    user.UserName = email;
-                    user.Email = email;
+                    var user = new IdentityUser
+                    {
+                        UserName = email,
+                        Email = email
+                    };
 
                     await userManager.CreateAsync(user, password);
-
                     await userManager.AddToRoleAsync(user, "Admin");
                 }
             }
