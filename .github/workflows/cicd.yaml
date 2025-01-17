@@ -41,8 +41,8 @@ jobs:
           /o:"deantjeee" \
           /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
           /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.cobertura.xml" \
-          /d:sonar.exclusions="**/bin/**,**/obj/**,**/TestResults/**,**/*.g.cs,**/*.Designer.cs" \
-          /d:sonar.coverage.exclusions="**/TestResults/**"
+          /d:sonar.exclusions="**/bin/**,**/obj/**,**/TestResults/**,**/*.g.cs,**/*.Designer.cs,**/CoverageReports/**" \
+          /d:sonar.coverage.exclusions="**/TestResults/**,**/CoverageReports/**,**/*.html"
 
     # Build the solution
     - name: Build the solution
