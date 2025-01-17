@@ -59,12 +59,20 @@ jobs:
         ~/.dotnet/tools/reportgenerator \
           -reports:"TestResults/**/coverage.cobertura.xml" \
           -targetdir:"./CoverageReports" \
-          -reporttypes:HtmlInline_AzurePipelines
+          -reporttypes:HtmlInline_AzurePipelines Html
 
     # End SonarQube Analysis
     - name: SonarQube Analysis End
       run: |
         dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+    # Upload Coverage Report as an Artifact
+    - name: Upload Coverage Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: CodeCoverageReport
+        path: ./CoverageReports
+        retention-days: 7
 
     # Log in to Docker Hub
     - name: Log in to Docker Hub
